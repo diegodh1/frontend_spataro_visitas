@@ -38,6 +38,7 @@
     "react-select-search": "^1.0.5",
     "react-svg-donuts": "^1.0.0",
     "react-swipeable-views": "^0.13.9",
+    "react-to-print": "^2.11.0",
     "recharts": "^1.8.5",
     "recompose": "^0.30.0",
     "redux": "^4.0.5",

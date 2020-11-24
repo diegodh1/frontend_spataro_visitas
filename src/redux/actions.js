@@ -16,8 +16,15 @@ export const SET_TYPE_ID = 'SET_TYPE_ID';
 export const SET_SEX = 'SET_SEX';
 export const SUCESS_LOGIN_CLIENT = 'SUCESS_LOGIN_CLIENT';
 export const ERROR_LOGIN_CLIENT = 'ERROR_LOGIN_CLIENT';
+export const REGISTRAR_INVITADO = 'REGISTRAR_INVITADO';
 
 //******************LOGIN*******************
+export const registrar_invitado = payload => {
+    return {
+        type: REGISTRAR_INVITADO,
+        payload
+    }
+}
 export const success_login = (payload,status) => {
     return {
         type: SUCCESS_LOGIN,

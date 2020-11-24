@@ -37,8 +37,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import Done from "@material-ui/icons/Done";
-import { createMuiTheme } from '@material-ui/core/styles';
-
+import { createMuiTheme } from "@material-ui/core/styles";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -208,9 +207,9 @@ export default function Perfiles() {
     })
       .then((res) => res.json())
       .then((response) => {
-        if(response.error){
+        if (response.error) {
           set_error(true);
-          set_error_message(""+response.error);
+          set_error_message("" + response.error);
         }
         set_success(true);
         set_success_message("Permiso agregado con éxito");
@@ -289,12 +288,9 @@ export default function Perfiles() {
   };
 
   const getProfilesFromUser = (id_doc) => {
-    fetch(
-      "http://localhost:4000/getAllUserPermissions/" + id_doc,
-      {
-        method: "GET",
-      }
-    )
+    fetch("http://localhost:4000/getAllUserPermissions/" + id_doc, {
+      method: "GET",
+    })
       .then((res) => (res.status == 204 ? [] : res.json()))
       .then((response) => {
         if (response.length > 0) {
@@ -316,7 +312,7 @@ export default function Perfiles() {
       body: JSON.stringify({
         PermisoID: valueId,
         UsuarioID: user_temp.UsuarioID,
-        UsuarioPermisoEstado: false
+        UsuarioPermisoEstado: false,
       }),
     })
       .then((res) => res.json())
@@ -341,7 +337,7 @@ export default function Perfiles() {
       body: JSON.stringify({
         PermisoID: valueId,
         UsuarioID: user_temp.UsuarioID,
-        UsuarioPermisoEstado: true
+        UsuarioPermisoEstado: true,
       }),
     })
       .then((res) => res.json())
@@ -378,7 +374,7 @@ export default function Perfiles() {
       </AppBar>
       <TabPanel value={value} index={0}>
         <Grid container className={classes.root} spacing={5}>
-          <Grid item xs={6}>
+          <Grid item xs={3}>
             <TextField
               fullWidth
               id="standard-text-permiso"
@@ -388,7 +384,7 @@ export default function Perfiles() {
               onChange={(e) => set_nombre_profile(e.target.value)}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <TextField
               fullWidth
               id="standard-textarea-permiso"
@@ -399,7 +395,7 @@ export default function Perfiles() {
               onChange={(e) => set_descripcion(e.target.value)}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1}>
             <FormControlLabel
               value={activado}
               control={
@@ -413,7 +409,7 @@ export default function Perfiles() {
               labelPlacement="top"
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <Button
               disabled={cargando}
               style={{ color: "green", marginLeft: "1%" }}
@@ -449,9 +445,7 @@ export default function Perfiles() {
                   </TableCell>
                   <TableCell>
                     <IconButton
-                      onClick={(e) =>
-                        eliminar_profile_temp(element.PermisoID)
-                      }
+                      onClick={(e) => eliminar_profile_temp(element.PermisoID)}
                       children={
                         <DeleteOutline
                           style={{
@@ -502,9 +496,8 @@ export default function Perfiles() {
                   </TableCell>
                   <TableCell>
                     {new Date(
-                          element.PermisoFechaCreacion
-                        ).toLocaleDateString()
-                    }
+                      element.PermisoFechaCreacion
+                    ).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <IconButton
@@ -564,9 +557,7 @@ export default function Perfiles() {
                   <TableCell>
                     {element.PermisoEstado ? (
                       <IconButton
-                        onClick={(e) =>
-                          borrar_perfil(element.PermisoID)
-                        }
+                        onClick={(e) => borrar_perfil(element.PermisoID)}
                         children={
                           <DeleteOutline
                             style={{
@@ -579,11 +570,7 @@ export default function Perfiles() {
                       />
                     ) : (
                       <IconButton
-                        onClick={(e) =>
-                          reactivar_perfil(
-                            element.PermisoID
-                          )
-                        }
+                        onClick={(e) => reactivar_perfil(element.PermisoID)}
                         children={
                           <AddCircleIcon
                             style={{
@@ -604,7 +591,8 @@ export default function Perfiles() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Grid container className={classes.root} spacing={5}>
-          <Grid item xs={6}>
+          <Grid item xs={4}></Grid>
+          <Grid item xs={3}>
             <TextField
               id="standard-txt"
               label="Numero de documento"
@@ -621,11 +609,12 @@ export default function Perfiles() {
               }}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1}>
             <Button style={{ marginLeft: "1%" }} onClick={buscar_id}>
               <SearchIcon style={{ fontSize: 30, marginLeft: "10px" }} />
             </Button>
           </Grid>
+          <Grid item xs={4}></Grid>
         </Grid>
         <h3 style={{ textAlign: "center", color: "gray" }}></h3>
         <TableContainer component={Paper} style={{ width: "100%" }}>
@@ -649,11 +638,9 @@ export default function Perfiles() {
                     {element.UsuarioEstado ? "Activo" : "No activo"}
                   </TableCell>
                   <TableCell>
-                    {
-                      new Date(
-                          element.UsuarioFechaCreacion
-                        ).toLocaleDateString()
-                    }
+                    {new Date(
+                      element.UsuarioFechaCreacion
+                    ).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
               ))}
@@ -685,9 +672,9 @@ export default function Perfiles() {
                         {element.PermisoEstado ? "Activo" : "No activo"}
                       </TableCell>
                       <TableCell>
-                          {new Date(
-                              element.PermisoFechaCreacion
-                              ).toLocaleDateString()}
+                        {new Date(
+                          element.PermisoFechaCreacion
+                        ).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
                         {profiles_from_user.length > 0 ? (

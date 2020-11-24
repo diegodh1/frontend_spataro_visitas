@@ -16,12 +16,14 @@ import {
     SET_TYPE_ID,
     SET_SEX,
     SUCESS_LOGIN_CLIENT,
-    ERROR_LOGIN_CLIENT
+    ERROR_LOGIN_CLIENT,
+    REGISTRAR_INVITADO
 }
     from './actions';
 
 const initialState = {
     usuario: {},
+    invitado:{},
     perfiles: [],
     client: {},
     message: 'Hola redux',
@@ -35,6 +37,8 @@ const initialState = {
 
 function redux_reducer(state = initialState, action) {
     switch (action.type) {
+        case REGISTRAR_INVITADO:
+            return { ...state, invitado: action.payload};
         case SUCCESS_LOGIN:
             return { ...state, usuario: action.payload.User,perfiles:action.payload.Perfiles};
         case ERROR_LOGIN:

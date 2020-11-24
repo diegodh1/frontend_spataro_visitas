@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, forwardRef } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
@@ -39,6 +39,9 @@ import CreateIcon from "@material-ui/icons/Create";
 import { CloudUpload } from "@material-ui/icons";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import DoneIcon from "@material-ui/icons/Done";
+import BlockIcon from "@material-ui/icons/Block";
+import PrintIcon from "@material-ui/icons/Print";
 //DIVIDER
 import Divider from "@material-ui/core/Divider";
 //DIALOGS
@@ -62,7 +65,12 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
-
+//ACTIONS
+import { registrar_invitado } from "../../redux/actions";
+//PRINT
+import ReactToPrint from "react-to-print";
+//REDIRECT
+import { withRouter, Redirect } from "react-router-dom";
 //TABS FOR DASHBOARD
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -114,7 +122,28 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: "white",
   },
+  dateField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200,
+  },
 }));
+
+//COMPONENT TO PRINT
+const Print = React.forwardRef((props, ref) => {
+  const { invitado } = useSelector((state) => ({
+    invitado: state.redux_reducer.invitado,
+  }));
+  return (
+    <div ref={ref} style={{ textAlign: "center", marginTop: "10%" }}>
+      <p>Tipo Documento: {invitado.tipoDocumento}</p>
+      <p>Número Documento: {invitado.numeroDocumento}</p>
+      <p>Empresa: {invitado.empresa}</p>
+      <p>Fecha Entrada: {new Date(invitado.entrada).toLocaleString()}</p>
+      <p>Fecha Salida: {new Date(invitado.salida).toLocaleString()}</p>
+    </div>
+  );
+});
 
 export default function Dashboard() {
   const classes = useStyles();
@@ -127,6 +156,8 @@ export default function Dashboard() {
   const [visitante, setVisitante] = React.useState({});
   const [existeVisitante, setExisteVisitante] = React.useState(false);
   const [visitanteID, setVisitanteID] = React.useState("");
+  const [fechaSelected, setFechaSelected] = React.useState("");
+  const [visitas, setVisitas] = React.useState([]);
   const [error, setError] = React.useState(false);
   const [editarVisitante, setEditarVisitante] = React.useState(true);
   const [success, setSuccess] = React.useState(false);
@@ -135,6 +166,9 @@ export default function Dashboard() {
   const [empleados, setEmpleados] = React.useState([]);
   const [empleadoID, changeEmpleadoID] = React.useState("");
   const [horas, changeHoras] = React.useState(0);
+  const [observacion, changeObservacion] = React.useState("");
+  const [registroVisitaID, changeRegistroVisitaID] = React.useState("");
+  const [visitFinish, setVisitFinish] = React.useState(false);
   //EDITAR VISITANTE
   const [visitanteIDF, setVisitanteIDF] = React.useState("");
   const [documentIDF, setDocumentIDF] = React.useState("");
@@ -152,8 +186,12 @@ export default function Dashboard() {
   const [companiesGuest, setCompaniesGuest] = React.useState([]);
   const [companyID, changeCompanyID] = React.useState("");
   const [pdfBase64, setPdfBase64] = React.useState("");
+  //PRINTS
+  const [printGuest, setPrintGuest] = React.useState(false);
   //tabs
   const [value, setValue] = React.useState(0);
+  //REFS
+  const ref = useRef();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -279,6 +317,12 @@ export default function Dashboard() {
             setError(true);
             setMessage(response.Message);
           } else {
+            setVisitanteIDF("");
+            setDocumentIDF("");
+            setNombreF("");
+            setApellidoF("");
+            setCelularF("");
+            setCorreoF("");
             setSuccess(true);
             setMessage(response.Message);
           }
@@ -367,6 +411,10 @@ export default function Dashboard() {
           } else {
             setSuccess(true);
             setMessage(response.Message);
+            setDocumentoNombre("");
+            setDocumentoReferencia("");
+            setDocumentoDescripcion("");
+            getDocumentsVisitante(parseInt(visitanteIDF), documentIDF);
           }
         })
         .catch((error) => alert("Error con la conexión al servidor " + error));
@@ -422,6 +470,7 @@ export default function Dashboard() {
       })
       .catch((error) => alert("Error con la conexión al servidor " + error));
   };
+
   //DOWNLOAD FILE
   const downloadFile = (idVisit, idDoc, nombre, path) => {
     console.log(idVisit);
@@ -467,7 +516,6 @@ export default function Dashboard() {
         setMessage("El ID del cliente debe ser numérico");
       }
     } else {
-      alert(JSON.stringify(usuario));
       let status = 500;
       fetch("http://localhost:4000/createGuestCompany/", {
         method: "POST",
@@ -490,11 +538,87 @@ export default function Dashboard() {
             setMessage(response.Message);
           } else {
             setSuccess(true);
+            changeHoras(0);
+            changeCompanyID("");
             setMessage(response.Message);
           }
         })
         .catch((error) => alert("Error con la conexión al servidor " + error));
     }
+  };
+  // GET VISITS
+  const getVisits = () => {
+    let status = 500;
+    let fecha = fechaSelected;
+    let fechaInicial = fecha + "T00:00:00Z";
+    let fechaFinal = fecha + "T23:59:59Z";
+    setVisitas([]);
+    fetch("http://localhost:4000/getVisits", {
+      method: "POST",
+      body: JSON.stringify({
+        FechaEntrada: fechaInicial,
+        FechaSalida: fechaFinal,
+      }), // data can be `string` or {object}!
+    })
+      .then((res) => {
+        status = res.status;
+        return res.json();
+      })
+      .then((response) => {
+        if (status !== 200) {
+          setError(true);
+          setMessage(response.Message);
+        } else {
+          setVisitas(response.Payload);
+        }
+      })
+      .catch((error) => alert("Error con la conexión al servidor " + error));
+  };
+  const setRegistroID = (id) => {
+    changeRegistroVisitaID(id);
+    setVisitFinish(true);
+  };
+
+  //FINISH VISIT
+  const finishGuestCompany = () => {
+    let status = 500;
+    fetch("http://localhost:4000/finishGuestCompany/", {
+      method: "POST",
+      body: JSON.stringify({
+        VisitanteEmpresaRegistro: registroVisitaID,
+        Observaciones: observacion,
+      }), // data can be `string` or {object}!
+    })
+      .then((res) => {
+        status = res.status;
+        return res.json();
+      })
+      .then((response) => {
+        if (status !== 200) {
+          setVisitFinish(false);
+          setError(true);
+          setMessage(response.Message);
+        } else {
+          setVisitFinish(false);
+          changeObservacion("");
+          setSuccess(true);
+          setMessage(response.Message);
+          getVisits();
+        }
+      })
+      .catch((error) => alert("Error con la conexión al servidor " + error));
+  };
+
+  const createPrintDocument = (item) => {
+    let invitado = {
+      tipoDocumento: item.DocumentoID,
+      numeroDocumento: item.VisitanteID,
+      empresa: item.EmpresaID,
+      entrada: item.FechaEntrada,
+      salida: item.FechaSalida,
+    };
+    dispatch(registrar_invitado(invitado));
+    setPrintGuest(true);
   };
 
   return (
@@ -513,6 +637,7 @@ export default function Dashboard() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
+        {usuario.status != 200 ? <Redirect to="/login/usuario" /> : null}
         <Grid container spacing={2}>
           <Grid item xs={2}></Grid>
           <Grid item xs={3}>
@@ -710,6 +835,7 @@ export default function Dashboard() {
                 <CloudUpload style={{ fontSize: 30, marginLeft: "3px" }} />
                 <Input
                   type="file"
+                  accept="application/pdf"
                   onChange={(e) => setDocumentoFile(e.target.files[0])}
                   style={{ display: "none" }}
                 />
@@ -974,18 +1100,135 @@ export default function Dashboard() {
             />
           </Grid>
           <Grid item xs={12}>
-              <div style={{ textAlign: "center" }}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => createGuestCompany()}
-                  className={classes.button}
-                  startIcon={<CreateIcon />}
-                >
-                  Crear Visita
-                </Button>
-              </div>
-            </Grid>
+            <div style={{ textAlign: "center" }}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => createGuestCompany()}
+                className={classes.button}
+                startIcon={<CreateIcon />}
+              >
+                Crear Visita
+              </Button>
+            </div>
+          </Grid>
+        </Grid>
+        <Divider />
+        <br />
+        <br />
+        <Grid container spacing={2}>
+          <Grid item xs={4}></Grid>
+          <Grid item xs={3}>
+            <TextField
+              id="date"
+              label="Fecha de Visita"
+              type="date"
+              fullWidth
+              onChange={(e) => setFechaSelected(e.target.value)}
+              className={classes.dateField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={1}>
+            <IconButton aria-label="BUSCAR" onClick={() => getVisits()}>
+              <SearchIcon fontSize="large" />
+            </IconButton>
+          </Grid>
+          <Grid item xs={4}></Grid>
+          <Grid item xs={12}>
+            <TableContainer component={Paper}>
+              <Table
+                className={classes.table}
+                size="small"
+                aria-label="a dense table"
+              >
+                <TableHead>
+                  <TableRow style={{ backgroundColor: "#0A0A09" }}>
+                    <TableCell style={{ color: "#FFFFFF" }}>
+                      Visitante ID
+                    </TableCell>
+                    <TableCell style={{ color: "#FFFFFF" }}>
+                      Documento
+                    </TableCell>
+                    <TableCell style={{ color: "#FFFFFF" }}>Entrada</TableCell>
+                    <TableCell style={{ color: "#FFFFFF" }}>Salida</TableCell>
+                    <TableCell style={{ color: "#FFFFFF" }}>
+                      Salida Real
+                    </TableCell>
+                    <TableCell style={{ color: "#FFFFFF" }}>
+                      Descargar
+                    </TableCell>
+                    <TableCell style={{ color: "#FFFFFF" }}>
+                      Finalizar
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {visitas.map((row) => (
+                    <TableRow key={row.VisitanteID}>
+                      <TableCell component="th" scope="row">
+                        {row.VisitanteID}
+                      </TableCell>
+                      <TableCell>{row.DocumentoID}</TableCell>
+                      <TableCell>
+                        {new Date(row.FechaEntrada).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(row.FechaSalida).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {row.FechaRealSalida == null
+                          ? "Pendiente"
+                          : new Date(row.FechaRealSalida).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          aria-label="descargar"
+                          onClick={() => createPrintDocument(row)}
+                        >
+                          <CloudDownloadIcon
+                            fontSize="large"
+                            style={{ color: "#2A66F0" }}
+                          />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>
+                        {row.RegistroSalida ? (
+                          <IconButton
+                            aria-label="descargar"
+                            disabled={row.RegistroSalida}
+                          >
+                            <BlockIcon
+                              fontSize="large"
+                              style={{ color: "#A7A6A6" }}
+                              onClick={() =>
+                                setRegistroID(row.VisitanteEmpresaRegistro)
+                              }
+                            />
+                          </IconButton>
+                        ) : (
+                          <IconButton
+                            aria-label="descargar"
+                            disabled={row.RegistroSalida}
+                          >
+                            <DoneIcon
+                              fontSize="large"
+                              style={{ color: "#C60707" }}
+                              onClick={() =>
+                                setRegistroID(row.VisitanteEmpresaRegistro)
+                              }
+                            />
+                          </IconButton>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
         </Grid>
       </TabPanel>
 
@@ -1037,6 +1280,88 @@ export default function Dashboard() {
         <DialogActions>
           <Button
             onClick={() => setSuccess(false)}
+            color="primary"
+            variant="outlined"
+            color="primary"
+            autoFocus
+          >
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={visitFinish}
+        onClose={() => setVisitFinish(false)}
+        aria-labelledby="alert-dialog-title-t"
+        aria-describedby="alert-dialog-description-t"
+      >
+        <DialogTitle
+          id="alert-dialog-title-t"
+          style={{ color: "green", textAlign: "center" }}
+        >
+          {"Información"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-t">
+            Desea agregar una observación?
+          </DialogContentText>
+          <br />
+          <TextField
+            id="observacion"
+            label="observacion"
+            value={observacion}
+            multiline
+            onChange={(e) => changeObservacion(e.target.value)}
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => finishGuestCompany()}
+            color="primary"
+            variant="outlined"
+            color="primary"
+            autoFocus
+          >
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={printGuest}
+        onClose={() => setPrintGuest(false)}
+        aria-labelledby="alert-dialog-title-t"
+        aria-describedby="alert-dialog-description-t"
+      >
+        <DialogTitle
+          id="alert-dialog-title-t"
+          style={{ color: "green", textAlign: "center" }}
+        >
+          {"Información"}
+        </DialogTitle>
+        <DialogContent>
+          <div style={{ textAlign: "center" }}>
+            <ReactToPrint
+              trigger={() => (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className={classes.button}
+                  startIcon={<PrintIcon />}
+                >
+                  Imprimir
+                </Button>
+              )}
+              content={() => ref.current}
+            />
+            <Print ref={ref} />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setPrintGuest()}
             color="primary"
             variant="outlined"
             color="primary"

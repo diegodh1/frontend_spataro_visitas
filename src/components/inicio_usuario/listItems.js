@@ -34,11 +34,5 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Permisos" />
     </ListItem>
-    <ListItem button component={Link} to='/admin/productos'>
-      <ListItemIcon>
-      <AddAPhoto/>
-      </ListItemIcon>
-      <ListItemText primary="Producto" />
-    </ListItem>
   </div>
 );
