@@ -27,6 +27,12 @@ import {lighten} from '@material-ui/core/styles';
 import { Select, TextField, MenuItem, Grid, Button, Avatar} from "@material-ui/core";
 import {Dialog, DialogTitle, DialogActions, DialogContent, FormControlLabel, Switch} from "@material-ui/core";
 import { purple } from '@material-ui/core/colors';
+import {
+	set_id,
+	set_nombre,
+	set_apellido,
+	set_contrasenha,
+} from '../../redux/actions';
 
 const PurpleSwitch = withStyles({
   switchBase: {
@@ -159,7 +165,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Usuarios(){
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
-
+    const dispatch = useDispatch();
     
     function a11yProps(index) {
     return {
@@ -169,7 +175,7 @@ export default function Usuarios(){
     }
 
     const handleChange = (event, newValue) => {
-    setValue(newValue);
+        setValue(newValue);
     };
 
     TabPanel.propTypes = {

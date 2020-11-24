@@ -17,24 +17,13 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import FormControl from '@material-ui/core/FormControl';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import {
-	MuiPickersUtilsProvider,
-	KeyboardDatePicker,
-  } from '@material-ui/pickers';
+import FormControl from '@material-ui/core/FormControl';	
 import { useSelector, useDispatch } from 'react-redux';
 import {
 	set_id,
 	set_nombre,
 	set_apellido,
-	set_celular,
-	set_correo,
 	set_contrasenha,
-	set_servicios,
-	subio_foto,
-	set_type_id,
-	set_date
 } from '../../redux/actions';
 import { CloudUpload} from '@material-ui/icons';
 import { IconButton } from '@material-ui/core';
@@ -201,7 +190,7 @@ export default function Formulario_empleado() {
 	const [activeStep, setActiveStep] = React.useState(0);
 	const [skipped, setSkipped] = React.useState(new Set());
 	const steps = getSteps();
-	const { usuario, coordenadas, subio_fot, datePick, tipoId} = useSelector(state => ({
+	const { usuario } = useSelector(state => ({
 		usuario: state.redux_reducer.usuario,
 		coordenadas: state.redux_reducer.coordenadas,
 		subio_fot: state.redux_reducer.subio_fot,
@@ -216,24 +205,30 @@ export default function Formulario_empleado() {
 		set_open_sucess(false);
 	};
 	const comprobar_info = () => {
-		if (!Number(usuario.id)) {
-			set_message('la cédula no puede estar vacia y debe ser un dato tipo numérico');
+		if(usuario.id && usuario.nombre && usuario.apellido){
+			if (!Number(usuario.id)) {
+				set_message('la cédula no puede estar vacia y debe ser un dato tipo numérico');
+				setOpen(true);
+			}
+			else if (usuario.nombre.length === 0) {
+				set_message('el nombre no puede estar vacio');
+				setOpen(true);
+			}
+			else if (usuario.apellido.length === 0) {
+				set_message('el apellido no puede estar vacio');
+				setOpen(true);
+			}
+			else {
+				setOpen(false);
+				handleNext()
+			}
+		}else{
+			set_message('Todos los campos son obligatorios');
 			setOpen(true);
-		}
-		else if (usuario.nombre.length === 0) {
-			set_message('el nombre no puede estar vacio');
-			setOpen(true);
-		}
-		else if (usuario.apellido.length === 0) {
-			set_message('el apellido no puede estar vacio');
-			setOpen(true);
-		}
-		else {
-			setOpen(false);
-			handleNext()
 		}
 	}
 	const subir_formulario = () => {
+
 		if (!Number(usuario.id) || usuario.nombre.length === 0 || usuario.apellido.length === 0 || usuario.contrasenha.length < 7) {
 
 			if (!Number(usuario.id)) {
