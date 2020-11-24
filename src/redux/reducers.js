@@ -17,7 +17,11 @@ import {
     SET_SEX,
     SUCESS_LOGIN_CLIENT,
     ERROR_LOGIN_CLIENT,
+<<<<<<< HEAD
     REGISTRAR_INVITADO
+=======
+    SET_REPEAT_CONTRASENHA
+>>>>>>> 788e76824cc7db27e6981b20cfe42a6dee2f1966
 }
     from './actions';
 
@@ -59,6 +63,8 @@ function redux_reducer(state = initialState, action) {
             return { ...state, usuario: { ...state.usuario, correo: action.payload } };
         case SET_CONTRASENHA:
             return { ...state, usuario: { ...state.usuario, contrasenha: action.payload } };
+        case SET_REPEAT_CONTRASENHA:
+            return { ...state, usuario: { ...state.usuario, equalContrasenha: action.payload } };    
         case SET_SERVICIOS:
             return { ...state, usuario: { ...state.usuario, servicios: action.payload } };
         case SET_CELULAR:

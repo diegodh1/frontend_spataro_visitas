@@ -22,6 +22,7 @@ import {
   set_nombre,
   set_apellido,
   set_contrasenha,
+  set_repeat_pass
 } from "../../redux/actions";
 import { CloudUpload } from "@material-ui/icons";
 import { IconButton } from "@material-ui/core";
@@ -135,8 +136,10 @@ function Informacion_seguridad() {
   };
   const set_state_contrasenhaRepeat = (value) => {
     if (value != contrasenhaNew) {
-      set_equalContrasenha(true);
+	  set_equalContrasenha(true);
+	  dispatch(set_repeat_pass(true));
     } else {
+	  set_repeat_pass(false); 	
       set_equalContrasenha(false);
     }
     set_contrasenhaRepeat(value);
@@ -201,7 +204,7 @@ function getStepContent(step) {
   }
 }
 
-export default function Formulario_empleado() {
+export default function Formulario_empleado() {		
   const classes = useStyles();
   const vertical = "top";
   const horizontal = "right";
@@ -250,8 +253,8 @@ export default function Formulario_empleado() {
       if (
         !Number(usuario.id) ||
         usuario.nombre.length === 0 ||
-        usuario.apellido.length === 0 ||
-        usuario.contrasenha.length < 1
+		usuario.contrasenha.length < 1
+		|| !usuario.equalContrasenha
       ) {
         if (!Number(usuario.id)) {
           set_message(
@@ -263,7 +266,10 @@ export default function Formulario_empleado() {
         }
         if (usuario.contrasenha.length < 1) {
           set_message("la contraseña debe ser mayor a 6 caracteres");
-        }
+		}
+		if (!usuario.equalContrasenha) {
+		  set_message("Asegurese de repetir la contraseña");	
+		}
         setOpen(true);
       } else {
         let status;

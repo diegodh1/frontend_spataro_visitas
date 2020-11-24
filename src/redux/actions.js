@@ -16,8 +16,12 @@ export const SET_TYPE_ID = 'SET_TYPE_ID';
 export const SET_SEX = 'SET_SEX';
 export const SUCESS_LOGIN_CLIENT = 'SUCESS_LOGIN_CLIENT';
 export const ERROR_LOGIN_CLIENT = 'ERROR_LOGIN_CLIENT';
+<<<<<<< HEAD
 export const REGISTRAR_INVITADO = 'REGISTRAR_INVITADO';
 
+=======
+export const SET_REPEAT_CONTRASENHA = 'SET_REPEAT_CONTRASENHA';
+>>>>>>> 788e76824cc7db27e6981b20cfe42a6dee2f1966
 //******************LOGIN*******************
 export const registrar_invitado = payload => {
     return {
@@ -136,6 +140,13 @@ export const set_sex = payload => {
 export const set_navbar = payload => {
     return {
         type: SET_NAVBAR,
+        payload
+    }
+}
+
+export const set_repeat_pass = payload => {
+    return {
+        type: SET_REPEAT_CONTRASENHA,
         payload
     }
 }
