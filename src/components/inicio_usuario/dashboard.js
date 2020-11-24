@@ -456,6 +456,46 @@ export default function Dashboard() {
       })
       .catch((error) => alert("Error con la conexión al servidor " + error));
   };
+  //CREAR VISITA
+  const createGuestCompany = () => {
+    if (!Number.isInteger(parseInt(visitanteID)) || documentoID == "") {
+      if (documentoID == "") {
+        setError(true);
+        setMessage("Seleccion un tipo de documento válido!!");
+      } else {
+        setError(true);
+        setMessage("El ID del cliente debe ser numérico");
+      }
+    } else {
+      alert(JSON.stringify(usuario));
+      let status = 500;
+      fetch("http://localhost:4000/createGuestCompany/", {
+        method: "POST",
+        body: JSON.stringify({
+          VisitanteID: parseInt(visitanteID),
+          DocumentoID: documentoID,
+          EmpleadoID: parseInt(empleadoID),
+          UsuarioID: usuario.UsuarioID,
+          EmpresaID: companyID,
+          VisitanteEmpresaHoras: parseInt(horas),
+        }), // data can be `string` or {object}!
+      })
+        .then((res) => {
+          status = res.status;
+          return res.json();
+        })
+        .then((response) => {
+          if (status !== 200) {
+            setError(true);
+            setMessage(response.Message);
+          } else {
+            setSuccess(true);
+            setMessage(response.Message);
+          }
+        })
+        .catch((error) => alert("Error con la conexión al servidor " + error));
+    }
+  };
 
   return (
     <main className={classes.content}>
@@ -933,6 +973,19 @@ export default function Dashboard() {
               fullWidth
             />
           </Grid>
+          <Grid item xs={12}>
+              <div style={{ textAlign: "center" }}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => createGuestCompany()}
+                  className={classes.button}
+                  startIcon={<CreateIcon />}
+                >
+                  Crear Visita
+                </Button>
+              </div>
+            </Grid>
         </Grid>
       </TabPanel>
 
