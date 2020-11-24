@@ -16,7 +16,8 @@ import {
     SET_TYPE_ID,
     SET_SEX,
     SUCESS_LOGIN_CLIENT,
-    ERROR_LOGIN_CLIENT
+    ERROR_LOGIN_CLIENT,
+    SET_REPEAT_CONTRASENHA
 }
     from './actions';
 
@@ -55,6 +56,8 @@ function redux_reducer(state = initialState, action) {
             return { ...state, usuario: { ...state.usuario, correo: action.payload } };
         case SET_CONTRASENHA:
             return { ...state, usuario: { ...state.usuario, contrasenha: action.payload } };
+        case SET_REPEAT_CONTRASENHA:
+            return { ...state, usuario: { ...state.usuario, equalContrasenha: action.payload } };    
         case SET_SERVICIOS:
             return { ...state, usuario: { ...state.usuario, servicios: action.payload } };
         case SET_CELULAR:

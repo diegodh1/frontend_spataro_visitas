@@ -16,7 +16,7 @@ export const SET_TYPE_ID = 'SET_TYPE_ID';
 export const SET_SEX = 'SET_SEX';
 export const SUCESS_LOGIN_CLIENT = 'SUCESS_LOGIN_CLIENT';
 export const ERROR_LOGIN_CLIENT = 'ERROR_LOGIN_CLIENT';
-
+export const SET_REPEAT_CONTRASENHA = 'SET_REPEAT_CONTRASENHA';
 //******************LOGIN*******************
 export const success_login = (payload,status) => {
     return {
@@ -129,6 +129,13 @@ export const set_sex = payload => {
 export const set_navbar = payload => {
     return {
         type: SET_NAVBAR,
+        payload
+    }
+}
+
+export const set_repeat_pass = payload => {
+    return {
+        type: SET_REPEAT_CONTRASENHA,
         payload
     }
 }
