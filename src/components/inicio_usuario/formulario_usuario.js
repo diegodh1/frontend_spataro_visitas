@@ -71,19 +71,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getSteps() {
-	return ['Información básica', 'Dirección', 'Seguridad'];
+	return ['Información básica', 'Seguridad'];
 }
 function Informacion_basica() {
 	const classes = useStyles();
 	const [id, set_cc] = useState('');
 	const [nombre, set_name] = useState('');
 	const [apellido, set_last_name] = useState('');
-	const [options, setOptions] = useState([]);
-	const [open, setOpen] = useState(false);
-	const loading = open && options.length === 0;
-	const {datePick} = useSelector(state => ({
-		datePick: state.redux_reducer.datePick,
-	}));
 	const dispatch = useDispatch();
 
 	const set_state_id = (value) => {
@@ -99,94 +93,12 @@ function Informacion_basica() {
 		set_last_name(value);
 	}
 	
-	const handleDateChange = (value) => {
-		dispatch(set_date(value));
-	};
-
-	const set_state_type_id = (value) => {
-		dispatch(set_type_id(value));
-	}
-
-	React.useEffect(() => {
-		let active = true;
-
-		if (!loading) {
-			return undefined;
-		}
-
-		fetch('http://localhost:4000/getAllDocuments', {
-				method: 'GET'
-			}).then(res => res.json())
-			.then(items => {
-				if(active){
-					setOptions(items.map((x) => x.DocumentTypeID));
-				}
-			})
-			.catch(err => console.log(err));
-		return () => {
-			active = false;
-		};
-	}, [loading]);
-
-	React.useEffect(() => {
-		if (!open) {
-		  setOptions([]);
-		}
-	  }, [open]);
 
 	return (
 		<div style={{ justifyContent: 'center', alignItems: 'center', }}>
 			<TextField id="usuario_id" type="number" value={id} onChange={e => set_state_id(e.target.value)} className={classes.input} label="Número documento" variant="outlined" />
-			<Autocomplete
-						id="async-autocompl"
-						open={open}
-						onOpen={() => {
-							setOpen(true);
-						}}
-						onClose={() => {
-							setOpen(false);
-						}}
-						getOptionSelected={(option, value) => option === value}
-						onChange={(event, newValue) => {
-							set_type_id(newValue);
-						}}
-						getOptionLabel={(option) => option}
-						options={options}
-						loading={loading}
-						renderInput={(params) => (
-							<TextField 
-								{...params}
-								className={classes.input}
-								label="Seleccione el documento"
-								variant="outlined"
-								InputProps={{
-									...params.InputProps,
-									endAdornment: (
-										<React.Fragment>
-											{loading ? <CircularProgress color="inherit" size={20} /> : null}
-											{params.InputProps.endAdornment}
-										</React.Fragment>
-									),
-								}}
-							/>
-						)}
-			/>
 			<TextField id="usuario_nombre" value={nombre} onChange={e => set_state_nombre(e.target.value)} className={classes.input} label="Nombre" variant="outlined" />
 			<TextField id="usuario_apellido" value={apellido} onChange={e => set_state_apellido(e.target.value)} className={classes.input} label="Apellido" variant="outlined" />
-			<MuiPickersUtilsProvider utils={DateFnsUtils}>
-				<KeyboardDatePicker
-					fullWidth
-					margin="normal"
-					id="date-picker-birthday-user"
-					label="Fecha de nacimiento"
-					format="yyyy/MM/dd"
-					value={datePick}
-					onChange={handleDateChange}
-					KeyboardButtonProps={{
-						'aria-label': 'Cambiar fecha',
-					}}
-				/>
-			</MuiPickersUtilsProvider>
 		</div>
 	)
 }
@@ -195,19 +107,13 @@ function Informacion_seguridad() {
 	const classes = useStyles();
 	const [contrasenhaNew, set_contrasenhaNew] = useState('');
 	const [contrasenhaRepeat, set_contrasenhaRepeat] = useState('');
-	const [equalContrasenha, set_equalContrasenha] = useState(true	);
+	const [equalContrasenha, set_equalContrasenha] = useState(true);
 	const [showPassword, set_showPassword] = useState(false);
-	const [foto, set_foto] = useState(false);
 	const [open, setOpen] = React.useState(false);
 	const [open_success, set_open_success] = React.useState(false);
-	const [message, set_message] = useState('');
 	const vertical = 'top';
 	const horizontal = 'right';
 
-
-	const { usuario } = useSelector(state => ({
-		usuario: state.redux_reducer.usuario,
-	}));
 	const dispatch = useDispatch();
 
 	const handleClose = () => {
@@ -230,16 +136,12 @@ function Informacion_seguridad() {
 
 	const handleClickShowPassword = () => {
 		set_showPassword(!showPassword);
-	  };
+	};
 	
-	  const handleMouseDownPassword = (event) => {
-		event.preventDefault();
-	  };
+	const handleMouseDownPassword = (event) => {
+	event.preventDefault();
+	};
 
-	const set_file = value => {
-		dispatch(subio_foto(value));
-		set_foto(true);
-	}
 
 	return (
 		<div style={{ alignContent: 'center' }}>
@@ -273,30 +175,6 @@ function Informacion_seguridad() {
 			error={equalContrasenha} 
 			/>	
 		</FormControl>
-			<div style={{ marginLeft: '20%' }}>
-				<Button variant="outlained" component="label">{foto?"Seleccionado":"Nada seleccionado"}
-				</Button>
-				<Button variant="contained" style={{ marginLeft: '3%', color: 'green' }} component="label"> Subir foto del usuario
-				<CloudUpload style={{ fontSize: 30, marginLeft: '10px' }} />
-					<Input
-						type="file"
-						onChange={e => set_file(e.target.files[0])}
-						style={{ display: "none" }}
-					/>
-				</Button>
-			</div>
-			<Snackbar open={open} autoHideDuration={3000} onClose={handleClose}
-				anchorOrigin={{ vertical, horizontal }}>
-				<Alert onClose={handleClose} severity="error">
-					{message}
-				</Alert>
-			</Snackbar>
-			<Snackbar open={open_success} autoHideDuration={3000} onClose={handleClose}
-				anchorOrigin={{ vertical, horizontal }}>
-				<Alert onClose={handleClose} severity="success">
-					archivo subido al servidor
-				</Alert>
-			</Snackbar>
 		</div>
 	)
 }
@@ -306,8 +184,6 @@ function getStepContent(step) {
 		case 0:
 			return <Informacion_basica />;
 		case 1:
-			return <Search_location />;	
-		case 2:
 			return <Informacion_seguridad />;
 		default:
 			return 'Unknown step';
@@ -369,57 +245,40 @@ export default function Formulario_empleado() {
 			if (usuario.apellido.length === 0) {
 				set_message('el apellido no puede estar vacio');
 			}
-			if (!Number(usuario.celular)) {
-				set_message('el celular no puede estar vacio y debe ser un dato tipo numérico');
-			}
-			if (!usuario.correo.includes('@')) {
-				set_message('el correo no puede estar vacio y debe ser de la forma example@example.com');
-			}
 			if (usuario.contrasenha.length < 7) {
 				set_message('la contraseña debe ser mayor a 6 caracteres');
 			}
 			setOpen(true);
 		}
 		else {
+			let status;
 			setOpen(false);
-			var formData = new FormData();
-			formData.append('photo', subio_fot);
-			formData.append('userInfo', JSON.stringify({
-				RestaurantUserID: parseInt(usuario.id),
-				RestaurantUserName: usuario.nombre,
-				RestaurantUserLastname: usuario.apellido,
-				RestaurantUserLatitude: parseFloat(coordenadas.lat),
-				RestaurantUserLongitude: parseFloat(coordenadas.lng),
-				RestaurantUserBirthdate: datePick,
-				RestaurantUserPass: usuario.contrasenha,
-				DocumentTypeID: usuario.tipoId
-			}));
 			fetch('http://localhost:4000/createUser', {
 				method: 'POST',
-				body: formData
-			}).then(res => res.json())
+				body: JSON.stringify({
+					UsuarioID: parseInt(usuario.id),
+					UsuarioNombre: usuario.nombre,
+					UsuarioApellido: usuario.apellido,
+					UsuarioContrasena: usuario.contrasenha,
+			})
+		}).then(res => {status=res.status; return res.json();})
 				.then(response => {
-					if (response.status === 400) {
-						set_message(response.message);
+					if (status != 200) {	
+						set_message(response.Message);
 						setOpen(true);
 					}
 					else {
-						set_message_success(response.message);
+						set_message_success("Se ha creado con exito el usuario");
 						set_open_sucess(true);
 						handleReset();
 						dispatch(set_id(''));
 						dispatch(set_nombre(''));
 						dispatch(set_apellido(''));
-						dispatch(set_celular(''));
-						dispatch(set_correo(''));
-						dispatch(set_servicios([]));
 						dispatch(set_contrasenha(''));
-						dispatch(subio_foto(false));
 					}
 				})
 				.catch(error => {
-					set_message(error);
-					setOpen(true);
+					alert("Error con la conexión al servidor: "+error);
 				});
 		}
 	}

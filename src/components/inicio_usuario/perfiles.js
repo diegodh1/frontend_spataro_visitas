@@ -78,6 +78,7 @@ export default function Perfiles() {
   const classes = useStyles();
   const [fetch_profiles, set_fetch_profiles] = useState([]);
   const [nombre_profile, set_nombre_profile] = useState("");
+  const [descripcion, set_descripcion] = useState("");
   const [nombre_profile_temp, set_nombre_profile_temp] = useState([]);
   const [cargando, set_cargando] = useState(false);
   const [error, set_error] = React.useState(false);
@@ -101,38 +102,6 @@ export default function Perfiles() {
   const [user_cargado, set_user_cargado] = useState([]);
   const [profiles_from_user, set_prof_from_user] = useState([]);
   const [user_temp, set_user_temp] = useState({});
-
-  const set_state_type_id = (value) => {
-    set_id_type(value);
-  };
-
-  React.useEffect(() => {
-    let active = true;
-
-    if (!loading) {
-      return undefined;
-    }
-
-    fetch("http://localhost:4000/getAllDocuments", {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((items) => {
-        if (active) {
-          setOptions(items.map((x) => x.DocumentTypeID));
-        }
-      })
-      .catch((err) => console.log(err));
-    return () => {
-      active = false;
-    };
-  }, [loading]);
-
-  React.useEffect(() => {
-    if (!open) {
-      setOptions([]);
-    }
-  }, [open]);
 
   const handleClick = (event, valueId) => {
     set_valueId(valueId);
@@ -162,10 +131,11 @@ export default function Perfiles() {
     let temp_profiles = nombre_profile_temp;
     temp_profiles.filter((x) => x.ProfileName === nombre_profile).length === 0
       ? temp_profiles.push({
-          ProfileName: nombre_profile,
-          ProfileStatus: gilad,
+          PermisoID: nombre_profile,
+          PermisoDesc: descripcion,
+          PermisoEstado: gilad,
         })
-      : set_error_message("Ya se ha creado este perfil");
+      : set_error_message("Ya se ha creado este permiso");
     set_nombre_profile_temp(temp_profiles);
     set_nombre_profile("");
     set_gilad(true);
@@ -174,9 +144,8 @@ export default function Perfiles() {
 
   const eliminar_profile_temp = (value) => {
     let temp = nombre_profile_temp;
-    console.log(value);
     for (let i = 0; i < temp.length; i++) {
-      if (value === temp[i].ProfileName) {
+      if (value === temp[i].PermisoID) {
         temp.splice(i, 1);
       }
     }
@@ -184,13 +153,12 @@ export default function Perfiles() {
     set_cargando(false);
   };
 
-  const borrar_perfil = (valueId, valueName) => {
-    fetch("http://localhost:4000/updateProfile", {
+  const borrar_perfil = (valueId) => {
+    fetch("http://localhost:4000/updatePermissions", {
       method: "POST",
       body: JSON.stringify({
-        ProfileID: parseInt(valueId),
-        ProfileName: valueName,
-        ProfileStatus: false,
+        PermisoID: valueId,
+        PermisoEstado: false,
       }),
     })
       .then((res) => res.json())
@@ -205,18 +173,16 @@ export default function Perfiles() {
         set_success_message("Perfil cambiado con éxito");
       })
       .catch((err) => {
-        set_error(true);
-        set_error_message("Error en la conexión con el servidor " + err);
+        alert("Error en la conexión con el servidor " + err);
       });
   };
 
-  const reactivar_perfil = (valueId, valueName) => {
-    fetch("http://localhost:4000/updateProfile", {
+  const reactivar_perfil = (valueId) => {
+    fetch("http://localhost:4000/updatePermissions", {
       method: "POST",
       body: JSON.stringify({
-        ProfileID: parseInt(valueId),
-        ProfileName: valueName,
-        ProfileStatus: true,
+        PermisoID: valueId,
+        PermisoEstado: true,
       }),
     })
       .then((res) => res.json())
@@ -231,29 +197,34 @@ export default function Perfiles() {
         set_success_message("Perfil cambiado con éxito");
       })
       .catch((err) => {
-        set_error(true);
-        set_error_message("Error en la conexión con el servidor " + err);
+        alert("Error en la conexión con el servidor " + err);
       });
   };
 
   const guardar_perfil = () => {
-    fetch("http://localhost:4000/createProfile", {
+    fetch("http://localhost:4000/createPermission", {
       method: "POST",
       body: JSON.stringify(nombre_profile_temp[0]),
     })
       .then((res) => res.json())
       .then((response) => {
+        if(response.error){
+          set_error(true);
+          set_error_message(""+response.error);
+        }
         set_success(true);
-        set_success_message("Perfil agregado con éxito");
+        set_success_message("Permiso agregado con éxito");
+        set_nombre_profile_temp([]);
+        set_nombre_profile("");
+        set_cargando(false);
       })
       .catch((err) => {
-        set_error(true);
-        set_error_message("Error en la conexión con el servidor " + err);
+        alert("Error en la conexión con el servidor " + err);
       });
   };
 
   useEffect(() => {
-    fetch("http://localhost:4000/getAllProfiles", {
+    fetch("http://localhost:4000/getAllPermissions", {
       method: "GET",
     })
       .then((res) => res.json())
@@ -277,11 +248,11 @@ export default function Perfiles() {
   };
 
   const cambiar_nom_perfil = () => {
-    fetch("http://localhost:4000/updateProfile", {
+    fetch("http://localhost:4000/updatePermissions", {
       method: "POST",
       body: JSON.stringify({
-        ProfileID: parseInt(valueId),
-        ProfileName: nombre_profile_to_change,
+        PermisoID: valueId,
+        PermisoDesc: nombre_profile_to_change,
       }),
     })
       .then((res) => res.json())
@@ -298,29 +269,28 @@ export default function Perfiles() {
         }
       })
       .catch((err) => {
-        set_error(true);
-        set_error_message("Error en la conexión con el servidor " + err);
+        alert("Error en la conexión con el servidor " + err);
       });
   };
 
   const buscar_id = () => {
-    fetch("http://localhost:4000/getUser/" + id_type + "/" + id_doc, {
+    fetch("http://localhost:4000/getUser/" + id_doc, {
       method: "GET",
     })
       .then((res) => res.json())
       .then((response) => {
         set_user_cargado([response]);
         set_user_temp(response);
-        getProfilesFromUser(id_type, id_doc);
+        getProfilesFromUser(id_doc);
       })
       .catch((error) => {
         alert(error);
       });
   };
 
-  const getProfilesFromUser = (id_type, id_doc) => {
+  const getProfilesFromUser = (id_doc) => {
     fetch(
-      "http://localhost:4000/getAllUserProfiles/" + id_type + "/" + id_doc,
+      "http://localhost:4000/getAllUserPermissions/" + id_doc,
       {
         method: "GET",
       }
@@ -330,7 +300,7 @@ export default function Perfiles() {
         if (response.length > 0) {
           set_prof_from_user(
             response.map((element) => {
-              return element.ProfileID;
+              return element.PermisoID;
             })
           );
         }
@@ -341,13 +311,12 @@ export default function Perfiles() {
   };
 
   const quitar_perfil = (valueId) => {
-    fetch("http://localhost:4000/updateProfileUser", {
+    fetch("http://localhost:4000/assignPermission", {
       method: "POST",
       body: JSON.stringify({
-        ProfileID: parseInt(valueId),
-        RestaurantUserID: user_temp.RestaurantUserID,
-        DocumentTypeID: user_temp.DocumentTypeID,
-        UserProfileStatus: false,
+        PermisoID: valueId,
+        UsuarioID: user_temp.UsuarioID,
+        UsuarioPermisoEstado: false
       }),
     })
       .then((res) => res.json())
@@ -362,19 +331,17 @@ export default function Perfiles() {
         set_success_message("Perfil borrado con éxito");
       })
       .catch((err) => {
-        set_error(true);
-        set_error_message("Error en la conexión con el servidor " + err);
+        alert("Error en la conexión con el servidor " + err);
       });
   };
 
   const asignar_perfil = (valueId) => {
-    fetch("http://localhost:4000/assignProfileToUser", {
+    fetch("http://localhost:4000/assignPermission", {
       method: "POST",
       body: JSON.stringify({
-        ProfileID: parseInt(valueId),
-        RestaurantUserID: user_temp.RestaurantUserID,
-        DocumentTypeID: user_temp.DocumentTypeID,
-        UserProfileStatus: true,
+        PermisoID: valueId,
+        UsuarioID: user_temp.UsuarioID,
+        UsuarioPermisoEstado: true
       }),
     })
       .then((res) => res.json())
@@ -389,8 +356,7 @@ export default function Perfiles() {
         set_success_message("Perfil asignado con éxito");
       })
       .catch((err) => {
-        set_error(true);
-        set_error_message("Error en la conexión con el servidor " + err);
+        alert("Error en la conexión con el servidor " + err);
       });
   };
 
@@ -406,20 +372,31 @@ export default function Perfiles() {
           aria-label="full width tabs example"
           className={classes.indicator}
         >
-          <Tab label="Crear Perfil" {...a11yProps(0)} />
-          <Tab label="Asignar Perfil" {...a11yProps(1)} />
+          <Tab label="Crear Permiso" {...a11yProps(0)} />
+          <Tab label="Asignar Permisos" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
         <Grid container className={classes.root} spacing={5}>
           <Grid item xs={6}>
             <TextField
-              id="standard-textarea"
+              fullWidth
+              id="standard-text-permiso"
               label="Nombre del perfil"
               disabled={cargando}
-              fullWidth
               value={nombre_profile}
               onChange={(e) => set_nombre_profile(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              id="standard-textarea-permiso"
+              multiline
+              label="Descripción"
+              disabled={cargando}
+              value={descripcion}
+              onChange={(e) => set_descripcion(e.target.value)}
             />
           </Grid>
           <Grid item xs={2}>
@@ -451,27 +428,29 @@ export default function Perfiles() {
         </Grid>
         <h3 style={{ textAlign: "center", color: "gray" }}>
           {" "}
-          Perfil a guardar
+          Permiso a guardar
         </h3>
         <TableContainer component={Paper} style={{ width: "100%" }}>
           <Table stickyHeader={true} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Nombre del perfil</TableCell>
+                <TableCell>Nombre del permiso</TableCell>
+                <TableCell>Descripción</TableCell>
                 <TableCell>Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {nombre_profile_temp.map((element) => (
-                <TableRow key={element.ProfileName}>
-                  <TableCell>{element.ProfileName}</TableCell>
+                <TableRow key={element.PermisoID}>
+                  <TableCell>{element.PermisoID}</TableCell>
+                  <TableCell>{element.PermisoDesc}</TableCell>
                   <TableCell>
-                    {element.ProfileStatus ? "Activo" : "No activo"}
+                    {element.PermisoEstado ? "Activo" : "No activo"}
                   </TableCell>
                   <TableCell>
                     <IconButton
                       onClick={(e) =>
-                        eliminar_profile_temp(element.ProfileName)
+                        eliminar_profile_temp(element.PermisoID)
                       }
                       children={
                         <DeleteOutline
@@ -496,40 +475,40 @@ export default function Perfiles() {
             endIcon={<Done />}
             onClick={(e) => guardar_perfil()}
           >
-            REGISTRAR PERFIL
+            REGISTRAR PERMISO
           </Button>
         </div>
         <br></br>
         <h3 style={{ textAlign: "center", color: "gray" }}>
-          Perfiles registrados
+          Permisos registrados
         </h3>
         <TableContainer component={Paper} style={{ width: "97%" }}>
           <Table stickyHeader={true} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Id</TableCell>
                 <TableCell>Nombre</TableCell>
+                <TableCell>Descripción</TableCell>
                 <TableCell>Estado</TableCell>
                 <TableCell>Fecha de creación</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {fetch_profiles.map((element) => (
-                <TableRow key={element.ProfileID}>
-                  <TableCell>{element.ProfileID}</TableCell>
-                  <TableCell>{element.ProfileName}</TableCell>
+                <TableRow key={element.PermisoID}>
+                  <TableCell>{element.PermisoID}</TableCell>
+                  <TableCell>{element.PermisoDesc}</TableCell>
                   <TableCell>
-                    {element.ProfileStatus ? "Activo" : "No activo"}
+                    {element.PermisoEstado ? "Activo" : "No activo"}
                   </TableCell>
                   <TableCell>
                     {new Date(
-                          element.ProfileCreationDate
+                          element.PermisoFechaCreacion
                         ).toLocaleDateString()
                     }
                   </TableCell>
                   <TableCell>
                     <IconButton
-                      onClick={(e) => handleClick(e, element.ProfileID)}
+                      onClick={(e) => handleClick(e, element.PermisoID)}
                       children={
                         <EditIcon
                           style={{
@@ -556,12 +535,13 @@ export default function Perfiles() {
                       }}
                     >
                       <Typography className={classes.typography}>
-                        Cambiar nombre perfil
+                        Cambiar descripcion
                       </Typography>
                       <TextField
-                        id="cambio-perfil"
-                        label="Nuevo nombre"
+                        id="cambio-descr"
+                        label="Nueva descripción"
                         fullWidth
+                        multiline
                         value={nombre_profile_to_change}
                         onChange={(e) =>
                           set_nombre_profile_to_change(e.target.value)
@@ -582,10 +562,10 @@ export default function Perfiles() {
                     </Popover>
                   </TableCell>
                   <TableCell>
-                    {element.ProfileStatus ? (
+                    {element.PermisoEstado ? (
                       <IconButton
                         onClick={(e) =>
-                          borrar_perfil(element.ProfileID, element.ProfileName)
+                          borrar_perfil(element.PermisoID)
                         }
                         children={
                           <DeleteOutline
@@ -601,8 +581,7 @@ export default function Perfiles() {
                       <IconButton
                         onClick={(e) =>
                           reactivar_perfil(
-                            element.ProfileID,
-                            element.ProfileName
+                            element.PermisoID
                           )
                         }
                         children={
@@ -628,7 +607,7 @@ export default function Perfiles() {
           <Grid item xs={6}>
             <TextField
               id="standard-txt"
-              label="Nombre del perfil"
+              label="Numero de documento"
               fullWidth
               type="number"
               value={id_doc}
@@ -641,42 +620,6 @@ export default function Perfiles() {
                 ),
               }}
             />
-          </Grid>
-          <Grid item xs={3}>
-          <Autocomplete
-						id="async-autocompl"
-						open={open}
-						onOpen={() => {
-							setOpen(true);
-						}}
-						onClose={() => {
-							setOpen(false);
-						}}
-						getOptionSelected={(option, value) => option === value}
-						onChange={(event, newValue) => {
-							set_state_type_id(newValue);
-						}}
-						getOptionLabel={(option) => option}
-						options={options}
-						loading={loading}
-						renderInput={(params) => (
-							<TextField 
-								{...params}
-								className={classes.input}
-								label="Seleccione el documento"
-								variant="outlined"
-								InputProps={{
-									...params.InputProps,
-									endAdornment: (
-										<React.Fragment>
-											{loading ? <CircularProgress color="inherit" size={20} /> : null}
-											{params.InputProps.endAdornment}
-										</React.Fragment>
-									),
-								}}
-							/>
-						)}
-			    />
           </Grid>
           <Grid item xs={2}>
             <Button style={{ marginLeft: "1%" }} onClick={buscar_id}>
@@ -698,17 +641,17 @@ export default function Perfiles() {
             </TableHead>
             <TableBody>
               {user_cargado.map((element) => (
-                <TableRow key={element.RestaurantUserID}>
-                  <TableCell>{element.RestaurantUserID}</TableCell>
-                  <TableCell>{element.RestaurantUserName}</TableCell>
-                  <TableCell>{element.RestaurantUserLastname}</TableCell>
+                <TableRow key={element.UsuarioID}>
+                  <TableCell>{element.UsuarioID}</TableCell>
+                  <TableCell>{element.UsuarioNombre}</TableCell>
+                  <TableCell>{element.UsuarioApellido}</TableCell>
                   <TableCell>
-                    {element.RestaurantUserStatus ? "Activo" : "No activo"}
+                    {element.UsuarioEstado ? "Activo" : "No activo"}
                   </TableCell>
                   <TableCell>
                     {
                       new Date(
-                          element.RestaurantUserCreationDate
+                          element.UsuarioFechaCreacion
                         ).toLocaleDateString()
                     }
                   </TableCell>
@@ -719,14 +662,14 @@ export default function Perfiles() {
         </TableContainer>
         <br></br>
         <h3 style={{ textAlign: "center", color: "gray" }}>
-          Perfiles Asignados
+          Permisos Asignados
         </h3>
         <TableContainer component={Paper} style={{ width: "97%" }}>
           <Table stickyHeader={true} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Id</TableCell>
                 <TableCell>Nombre</TableCell>
+                <TableCell>Descripción</TableCell>
                 <TableCell>Estado</TableCell>
                 <TableCell>Fecha de creación</TableCell>
                 <TableCell>Asignado/Asignar</TableCell>
@@ -735,22 +678,22 @@ export default function Perfiles() {
             <TableBody>
               {user_cargado.length > 0
                 ? fetch_profiles.map((element) => (
-                    <TableRow key={element.ProfileID}>
-                      <TableCell>{element.ProfileID}</TableCell>
-                      <TableCell>{element.ProfileName}</TableCell>
+                    <TableRow key={element.PermisoID}>
+                      <TableCell>{element.PermisoID}</TableCell>
+                      <TableCell>{element.PermisoDesc}</TableCell>
                       <TableCell>
-                        {element.ProfileStatus ? "Activo" : "No activo"}
+                        {element.PermisoEstado ? "Activo" : "No activo"}
                       </TableCell>
                       <TableCell>
                           {new Date(
-                              element.ProfileCreationDate
-                            ).toLocaleDateString()}
+                              element.PermisoFechaCreacion
+                              ).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
                         {profiles_from_user.length > 0 ? (
-                          profiles_from_user.includes(element.ProfileID) ? (
+                          profiles_from_user.includes(element.PermisoID) ? (
                             <IconButton
-                              onClick={(e) => quitar_perfil(element.ProfileID)}
+                              onClick={(e) => quitar_perfil(element.PermisoID)}
                               children={
                                 <CheckBoxIcon
                                   style={{ fontSize: 25, marginLeft: "5px" }}
@@ -759,7 +702,7 @@ export default function Perfiles() {
                             />
                           ) : (
                             <IconButton
-                              onClick={(e) => asignar_perfil(element.ProfileID)}
+                              onClick={(e) => asignar_perfil(element.PermisoID)}
                               children={
                                 <CheckBoxOutlineBlankIcon
                                   style={{ fontSize: 25, marginLeft: "5px" }}
@@ -769,7 +712,7 @@ export default function Perfiles() {
                           )
                         ) : (
                           <IconButton
-                            onClick={(e) => asignar_perfil(element.ProfileID)}
+                            onClick={(e) => asignar_perfil(element.PermisoID)}
                             children={
                               <CheckBoxOutlineBlankIcon
                                 style={{ fontSize: 25, marginLeft: "5px" }}

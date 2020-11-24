@@ -22,24 +22,11 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import EditIcon from "@material-ui/icons/Edit";
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import clsx from 'clsx';
 import {lighten} from '@material-ui/core/styles';
 import { Select, TextField, MenuItem, Grid, Button, Avatar} from "@material-ui/core";
 import {Dialog, DialogTitle, DialogActions, DialogContent, FormControlLabel, Switch} from "@material-ui/core";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
 import { purple } from '@material-ui/core/colors';
-import Search_location from '../mapas/search_location';
-import {
-  set_coordinates  
-} from '../../redux/actions';
-import { set } from "date-fns";
 
 const PurpleSwitch = withStyles({
   switchBase: {
@@ -259,12 +246,10 @@ function TabPanel(props) {
   }
   
   const headCells = [
-    { id: 'RestaurantUserID', numeric: true, disablePadding: false, label: 'Número de identificación'},
-    { id: 'DocumentTypeID', numeric: false, disablePadding: true, label: 'Tipo de documento' },
-    { id: 'RestaurantUserName', numeric: false, disablePadding: true, label: 'Nombre' },
-    { id: 'RestaurantUserLastname', numeric: false, disablePadding: true, label: 'Apellido' },
-    { id: 'RestaurantUserModDate', numeric: false, disablePadding: true, label: 'Fecha última modif' },
-    { id:  'RestaurantUserCreationDate', numeric: false, disablePadding: true, label: 'Fecha de creación' },
+    { id: 'UsuarioID', numeric: true, disablePadding: false, label: 'Número de identificación'},
+    { id: 'UsuarioNombre', numeric: false, disablePadding: true, label: 'Nombre' },
+    { id: 'UsuarioApellido', numeric: false, disablePadding: true, label: 'Apellido' },
+    { id:  'UsuarioFechaCreacion', numeric: false, disablePadding: true, label: 'Fecha de creación' },
   ];
   
   function EnhancedTableHead(props) {
@@ -280,7 +265,6 @@ function TabPanel(props) {
           {headCells.map((headCell) => (
             <TableCell
               key={headCell.id}
-              align={headCell.numeric ? 'right' : 'left'}
               padding={headCell.disablePadding ? 'none' : 'default'}
               sortDirection={orderBy === headCell.id ? order : false}
             >
@@ -349,17 +333,13 @@ function TabPanel(props) {
       
     switch(id){
         
-        case "RestaurantUserID":
+        case "UsuarioID":
           return "Id";
-        case "DocumentTypeID":
-          return "Tipo de doc";
-        case "RestaurantUserName":
+        case "UsuarioNombre":
           return "Nombre";
-        case "RestaurantUserLastname":
+        case "UsuarioApellido":
           return "Apellidos";
-        case "RestaurantUserModDate":
-          return "Por fecha de mod";
-        case "RestaurantUserCreationDate":
+        case "UsuarioFechaCreacion":
           return "Por fecha creac";
         default:
           return "";           
@@ -371,7 +351,7 @@ function TabPanel(props) {
         className={clsx(classes.root)}
       >
           <Typography className={classes.title} variant="h5" id="tableTitle" component="div">
-            Tabla de usuarios del restaurante
+            Tabla de usuarios
           </Typography>
           <Grid container>
             <Grid item xs={6}>
@@ -410,7 +390,7 @@ function TabPanel(props) {
 
     const classes = useStyles();
     const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('RestaurantUserID');
+    const [orderBy, setOrderBy] = React.useState('UsuarioID');
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [rows, setRows] = React.useState([]);
@@ -419,24 +399,17 @@ function TabPanel(props) {
     const [success, set_success] = React.useState(false);
     const [success_message, set_success_message] = useState("");
     const [search, setSearch] = React.useState("");
-    const [filterCrit, setFilter] = React.useState("RestaurantUserID");
+    const [filterCrit, setFilter] = React.useState("UsuarioID");
     const [openD, setOpenD] = React.useState(false);
     const vertical = "top";
     const horizontal = "right";
     const [id, setId] = React.useState(0);
-    const [typeId, setType] = React.useState("");
     const [name, setName] = React.useState("");
     const [lastName, setLastName] = React.useState("");
     const [status, setStatus] = React.useState(false);
-    const [datePick, setDate] = React.useState(null);
-    const [picture, setPicture] = React.useState("");
-    const dispatch = useDispatch();
-    const {coordenadas} = useSelector(state => ({
-      coordenadas: state.redux_reducer.coordenadas,
-    }));
 
     const refresh = () => {
-      fetch("http://localhost:4000/listUsers/50/0", {
+      fetch("http://localhost:4000/listUsers", {
         method: "GET",
       })
         .then((res) => res.json())
@@ -453,7 +426,7 @@ function TabPanel(props) {
     }
 
     useEffect(() => {
-      fetch("http://localhost:4000/listUsers/50/0", {
+      fetch("http://localhost:4000/listUsers", {
         method: "GET",
       })
         .then((res) => res.json())
@@ -476,14 +449,10 @@ function TabPanel(props) {
     };
   
     const handleClick = (event, userSelected) => {
-        setId(userSelected.RestaurantUserID);
-        setType(userSelected.DocumentTypeID);
-        setName(userSelected.RestaurantUserName);
-        setLastName(userSelected.RestaurantUserLastname);
-        setStatus(userSelected.RestaurantUserStatus);
-        setDate(new Date(userSelected.RestaurantUserBirthdate));
-        setPicture(userSelected.RestaurantUserPicture);
-        dispatch(set_coordinates({ lat: userSelected.RestaurantUserLatitude, lng: userSelected.RestaurantUserLongitude}));
+        setId(userSelected.UsuarioID);
+        setName(userSelected.UsuarioNombre);
+        setLastName(userSelected.UsuarioApellido);
+        setStatus(userSelected.UsuarioEstado);
         setOpenD(true);
     };
   
@@ -504,14 +473,10 @@ function TabPanel(props) {
       fetch("http://localhost:4000/updateUser", {
         method: "POST",
         body: JSON.stringify({
-          RestaurantUserID: id,
-          RestaurantUserName: name,
-          RestaurantUserLastname: lastName,
-          RestaurantUserLatitude: parseFloat(coordenadas.lat),
-          RestaurantUserLongitude: parseFloat(coordenadas.lng),
-          RestaurantUserBirthdate: datePick,
-          RestaurantUserStatus: status,
-          DocumentTypeID: typeId,
+          UsuarioID: id,
+          UsuarioNombre: name,
+          UsuarioApellido: lastName,
+          UsuarioEstado: status,
         }), // data can be `string` or {object}!
       })
         .then((res) => {
@@ -532,10 +497,6 @@ function TabPanel(props) {
           alert(err);
         })
     }
-
-    const handleDateChange = (value) => {
-       setDate(value);
-    };
 
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
@@ -570,13 +531,13 @@ function TabPanel(props) {
   
                     return (
                       <TableRow
-                        hover={row.RestaurantUserStatus}
+                        hover={row.UsuarioEstado}
                         style={
-                          row.RestaurantUserStatus ? { opacity: 1 } : { opacity: 0.5 }
+                          row.UsuarioEstado ? { opacity: 1 } : { opacity: 0.3 }
                         }
                         onClick={(event) => handleClick(event, row)}
                         tabIndex={-1}
-                        key={labelId+row.RestaurantUserID}
+                        key={labelId+row.UsuarioID}
                       >
                         <TableCell padding="checkbox">
                         <IconButton
@@ -585,14 +546,12 @@ function TabPanel(props) {
                             }
                           />
                         </TableCell>
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
-                          {parseInt(row.RestaurantUserID)}
+                        <TableCell component="th" id={labelId} padding="none">
+                          {parseInt(row.UsuarioID)}
                         </TableCell>
-                        <TableCell align="right">{row.DocumentTypeID}</TableCell>
-                        <TableCell align="right">{row.RestaurantUserName}</TableCell>
-                        <TableCell align="right">{row.RestaurantUserLastname}</TableCell>
-                        <TableCell align="right">{new Date(row.RestaurantUserCreationDate).toLocaleDateString()}</TableCell>
-                        <TableCell align="right">{new Date(row.RestaurantUserModDate).toLocaleDateString()}</TableCell>
+                        <TableCell >{row.UsuarioNombre}</TableCell>
+                        <TableCell >{row.UsuarioApellido}</TableCell>
+                        <TableCell >{new Date(row.UsuarioFechaCreacion).toLocaleDateString()}</TableCell>
                       </TableRow>
                     );
                   }):null}
@@ -624,9 +583,6 @@ function TabPanel(props) {
         <DialogTitle id="scroll-dialog-title">Modificar usuario</DialogTitle>
         <DialogContent>
         <div>
-          <div style={{display: 'flex ', alignItems: 'center'}}>
-            <Avatar src={picture.length>0?"http://localhost:4000/file/"+picture:null} className={classes.avatar}/>   
-          </div>
         <FormControlLabel
           control={<PurpleSwitch checked={status} onChange={(e) => setStatus(!status)} name="checkedStatus" />}
           label="Activar/Desactivar usuario"
@@ -657,21 +613,6 @@ function TabPanel(props) {
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
         />
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-			        fullWidth
-              margin="normal"
-              id="date-picker-birthday-user-admin"
-              label="Fecha de nacimiento"
-              format="yyyy/MM/dd"
-              value={datePick}
-              onChange={handleDateChange}
-              KeyboardButtonProps={{
-                "aria-label": "Cambiar fecha",
-              }}
-            />
-          </MuiPickersUtilsProvider>
-          <Search_location/>
         </div>
         </DialogContent>
         <DialogActions>

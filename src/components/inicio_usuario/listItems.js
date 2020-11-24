@@ -28,11 +28,11 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Usuarios" />
     </ListItem>
-    <ListItem button component={Link} to='/admin/perfiles'>
+    <ListItem button component={Link} to='/admin/permisos'>
       <ListItemIcon>
       <GroupAddIcon/>
       </ListItemIcon>
-      <ListItemText primary="Perfiles" />
+      <ListItemText primary="Permisos" />
     </ListItem>
     <ListItem button component={Link} to='/admin/productos'>
       <ListItemIcon>
