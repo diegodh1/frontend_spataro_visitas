@@ -136,11 +136,11 @@ function Informacion_seguridad() {
   };
   const set_state_contrasenhaRepeat = (value) => {
     if (value != contrasenhaNew) {
-	  set_equalContrasenha(true);
-	  dispatch(set_repeat_pass(true));
+      set_equalContrasenha(true);
+      dispatch(set_repeat_pass(true));
     } else {
-	  set_repeat_pass(false); 	
       set_equalContrasenha(false);
+      dispatch(set_repeat_pass(false));
     }
     set_contrasenhaRepeat(value);
   };
