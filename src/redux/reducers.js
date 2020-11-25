@@ -17,11 +17,8 @@ import {
     SET_SEX,
     SUCESS_LOGIN_CLIENT,
     ERROR_LOGIN_CLIENT,
-<<<<<<< HEAD
-    REGISTRAR_INVITADO
-=======
+    REGISTRAR_INVITADO,
     SET_REPEAT_CONTRASENHA
->>>>>>> 788e76824cc7db27e6981b20cfe42a6dee2f1966
 }
     from './actions';
 

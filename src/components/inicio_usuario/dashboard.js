@@ -70,7 +70,7 @@ import { registrar_invitado } from "../../redux/actions";
 //PRINT
 import ReactToPrint from "react-to-print";
 //REDIRECT
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter, Redirect } from 'react-router-dom';
 //TABS FOR DASHBOARD
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -135,7 +135,7 @@ const Print = React.forwardRef((props, ref) => {
     invitado: state.redux_reducer.invitado,
   }));
   return (
-    <div ref={ref} style={{ textAlign: "center", marginTop: "10%" }}>
+    <div ref={ref} style={{textAlign:'center', marginTop:'10%'}}>
       <p>Tipo Documento: {invitado.tipoDocumento}</p>
       <p>Número Documento: {invitado.numeroDocumento}</p>
       <p>Empresa: {invitado.empresa}</p>
@@ -637,7 +637,6 @@ export default function Dashboard() {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        {usuario.status != 200 ? <Redirect to="/login/usuario" /> : null}
         <Grid container spacing={2}>
           <Grid item xs={2}></Grid>
           <Grid item xs={3}>

@@ -17,7 +17,7 @@ import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import { mainListItems, secondaryListItems } from "./listItems";
+import { MainListItems, secondaryListItems } from "./listItems";
 import {
   BrowserRouter,
   Route,
@@ -207,7 +207,7 @@ export default function Dashboard_empleado() {
                 </IconButton>
               </div>
               <Divider />
-              <List>{mainListItems}</List>
+              <List><MainListItems/></List>
               <Divider />
             </Drawer>
             <main className={classes.content}>
