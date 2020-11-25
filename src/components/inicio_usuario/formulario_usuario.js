@@ -116,33 +116,26 @@ function Informacion_seguridad() {
   const classes = useStyles();
   const [contrasenhaNew, set_contrasenhaNew] = useState("");
   const [contrasenhaRepeat, set_contrasenhaRepeat] = useState("");
-  const [equalContrasenha, set_equalContrasenha] = useState(true);
+  const [equalContrasenha, set_equalContrasenha] = useState(false);
   const [showPassword, set_showPassword] = useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [open_success, set_open_success] = React.useState(false);
-  const vertical = "top";
-  const horizontal = "right";
 
   const dispatch = useDispatch();
 
-  const handleClose = () => {
-    setOpen(false);
-    set_open_success(false);
-  };
   const set_state_contrasenhaNew = (value) => {
     dispatch(set_contrasenha(value));
-    set_contrasenhaNew(value);
-    set_equalContrasenha(true);
+		set_contrasenhaNew(value);
+		set_equalContrasenha(false);
+		dispatch(set_repeat_pass(false));
   };
   const set_state_contrasenhaRepeat = (value) => {
-    if (value != contrasenhaNew) {
-      set_equalContrasenha(true);
-      dispatch(set_repeat_pass(true));
-    } else {
-      set_equalContrasenha(false);
-      dispatch(set_repeat_pass(false));
-    }
-    set_contrasenhaRepeat(value);
+    if(value!=contrasenhaNew){
+			set_equalContrasenha(false);
+			dispatch(set_repeat_pass(false));
+		}else{
+			dispatch(set_repeat_pass(true));
+			set_equalContrasenha(true);
+		}
+		set_contrasenhaRepeat(value);
   };
 
   const handleClickShowPassword = () => {
@@ -186,7 +179,7 @@ function Informacion_seguridad() {
           type="password"
           value={contrasenhaRepeat}
           onChange={(e) => set_state_contrasenhaRepeat(e.target.value)}
-          error={equalContrasenha}
+          error={!equalContrasenha}
         />
       </FormControl>
     </div>
