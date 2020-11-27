@@ -415,7 +415,7 @@ function TabPanel(props) {
     const [status, setStatus] = React.useState(false);
 
     const refresh = () => {
-      fetch("http://localhost:4000/listUsers", {
+      fetch("http://192.168.1.47:4000/listUsers", {
         method: "GET",
       })
         .then((res) => res.json())
@@ -432,7 +432,7 @@ function TabPanel(props) {
     }
 
     useEffect(() => {
-      fetch("http://localhost:4000/listUsers", {
+      fetch("http://192.168.1.47:4000/listUsers", {
         method: "GET",
       })
         .then((res) => res.json())
@@ -476,7 +476,7 @@ function TabPanel(props) {
     };
 
     const updateUser = () => {
-      fetch("http://localhost:4000/updateUser", {
+      fetch("http://192.168.1.47:4000/updateUser", {
         method: "POST",
         body: JSON.stringify({
           UsuarioID: id,

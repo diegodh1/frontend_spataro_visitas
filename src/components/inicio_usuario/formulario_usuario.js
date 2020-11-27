@@ -267,7 +267,7 @@ export default function Formulario_empleado() {
       } else {
         let status;
         setOpen(false);
-        fetch("http://localhost:4000/createUser", {
+        fetch("http://192.168.1.47:4000/createUser", {
           method: "POST",
           body: JSON.stringify({
             UsuarioID: parseInt(usuario.id),
