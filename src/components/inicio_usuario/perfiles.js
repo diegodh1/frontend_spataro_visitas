@@ -94,10 +94,6 @@ export default function Perfiles() {
   const [valueId, set_valueId] = useState(0);
   const componRef = React.useRef();
   const [id_doc, set_id_doc] = useState("");
-  const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState([]);
-  const loading = open && options.length === 0;
-  const [id_type, set_id_type] = useState("");
   const [user_cargado, set_user_cargado] = useState([]);
   const [profiles_from_user, set_prof_from_user] = useState([]);
   const [user_temp, set_user_temp] = useState({});
@@ -236,7 +232,7 @@ export default function Perfiles() {
         alert(error);
       });
   }, []);
-
+ 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -322,9 +318,9 @@ export default function Perfiles() {
           set_error_message("Error: " + response.error);
           return;
         }
-        buscar_id();
+        getProfilesFromUser(id_doc);
         set_success(true);
-        set_success_message("Perfil borrado con éxito");
+        set_success_message("Permiso borrado con éxito");
       })
       .catch((err) => {
         alert("Error en la conexión con el servidor " + err);
@@ -347,9 +343,9 @@ export default function Perfiles() {
           set_error_message("Error: " + response.error);
           return;
         }
-        buscar_id();
+        getProfilesFromUser(id_doc);
         set_success(true);
-        set_success_message("Perfil asignado con éxito");
+        set_success_message("Permiso asignado con éxito");
       })
       .catch((err) => {
         alert("Error en la conexión con el servidor " + err);
