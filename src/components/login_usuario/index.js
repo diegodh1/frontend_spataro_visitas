@@ -179,13 +179,6 @@ const Login_usuario = () => {
                 {"Error en la contraseña o usuario "}
               </Alert>
             </Snackbar>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2" style={{ color: '#707070' }}>
-                  Recuperar contraseña
-                </Link>
-              </Grid>
-            </Grid>
             <Box mt={5}>
               <Copyright />
             </Box>
