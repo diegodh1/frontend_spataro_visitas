@@ -149,7 +149,7 @@ export default function Perfiles() {
   };
 
   const borrar_perfil = (valueId) => {
-    fetch("http://localhost:4000/updatePermissions", {
+    fetch("http://192.168.1.47:4000/updatePermissions", {
       method: "POST",
       body: JSON.stringify({
         PermisoID: valueId,
@@ -173,7 +173,7 @@ export default function Perfiles() {
   };
 
   const reactivar_perfil = (valueId) => {
-    fetch("http://localhost:4000/updatePermissions", {
+    fetch("http://192.168.1.47:4000/updatePermissions", {
       method: "POST",
       body: JSON.stringify({
         PermisoID: valueId,
@@ -197,7 +197,7 @@ export default function Perfiles() {
   };
 
   const guardar_perfil = () => {
-    fetch("http://localhost:4000/createPermission", {
+    fetch("http://192.168.1.47:4000/createPermission", {
       method: "POST",
       body: JSON.stringify(nombre_profile_temp[0]),
     })
@@ -219,7 +219,7 @@ export default function Perfiles() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:4000/getAllPermissions", {
+    fetch("http://192.168.1.47:4000/getAllPermissions", {
       method: "GET",
     })
       .then((res) => res.json())
@@ -243,7 +243,7 @@ export default function Perfiles() {
   };
 
   const cambiar_nom_perfil = () => {
-    fetch("http://localhost:4000/updatePermissions", {
+    fetch("http://192.168.1.47:4000/updatePermissions", {
       method: "POST",
       body: JSON.stringify({
         PermisoID: valueId,
@@ -269,7 +269,7 @@ export default function Perfiles() {
   };
 
   const buscar_id = () => {
-    fetch("http://localhost:4000/getUser/" + id_doc, {
+    fetch("http://192.168.1.47:4000/getUser/" + id_doc, {
       method: "GET",
     })
       .then((res) => res.json())
@@ -284,7 +284,7 @@ export default function Perfiles() {
   };
 
   const getProfilesFromUser = (id_doc) => {
-    fetch("http://localhost:4000/getAllUserPermissions/" + id_doc, {
+    fetch("http://192.168.1.47:4000/getAllUserPermissions/" + id_doc, {
       method: "GET",
     })
       .then((res) => (res.status == 204 ? [] : res.json()))
@@ -303,7 +303,7 @@ export default function Perfiles() {
   };
 
   const quitar_perfil = (valueId) => {
-    fetch("http://localhost:4000/assignPermission", {
+    fetch("http://192.168.1.47:4000/assignPermission", {
       method: "POST",
       body: JSON.stringify({
         PermisoID: valueId,
@@ -328,7 +328,7 @@ export default function Perfiles() {
   };
 
   const asignar_perfil = (valueId) => {
-    fetch("http://localhost:4000/assignPermission", {
+    fetch("http://192.168.1.47:4000/assignPermission", {
       method: "POST",
       body: JSON.stringify({
         PermisoID: valueId,

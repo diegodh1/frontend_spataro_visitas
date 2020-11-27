@@ -183,7 +183,7 @@ export default function Formulario_update_usuario() {
     } else {
       let status;
       setOpen(false);
-      fetch("http://localhost:4000/updateUser", {
+      fetch("http://192.168.1.47:4000/updateUser", {
         method: "POST",
         body: JSON.stringify({
           RestaurantUserID: parseInt(usuario.id),

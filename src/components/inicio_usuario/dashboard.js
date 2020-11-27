@@ -198,7 +198,7 @@ export default function Dashboard() {
 
   //CARGAMOS LOS TIPOS DE DOCUMENTO APENAS CARGA LA VENTANA
   React.useEffect(() => {
-    fetch("http://localhost:4000/getAllDocuments/", {
+    fetch("http://192.168.1.47:4000/getAllDocuments/", {
       method: "GET",
     })
       .then((res) => res.json())
@@ -207,7 +207,7 @@ export default function Dashboard() {
       })
       .catch((err) => console.log(err));
 
-    fetch("http://localhost:4000/getAllEmployees/", {
+    fetch("http://192.168.1.47:4000/getAllEmployees/", {
       method: "GET",
     })
       .then((res) => res.json())
@@ -241,7 +241,7 @@ export default function Dashboard() {
       setError(true);
       setMessage("El ID del cliente debe ser numérico");
     } else {
-      fetch("http://localhost:4000/getGuest/", {
+      fetch("http://192.168.1.47:4000/getGuest/", {
         method: "POST",
         body: JSON.stringify({
           VisitanteID: parseInt(visitanteID),
@@ -297,7 +297,7 @@ export default function Dashboard() {
         setMessage("Debe seleccionar un tipo de documento");
       }
     } else {
-      fetch("http://localhost:4000/createGuest", {
+      fetch("http://192.168.1.47:4000/createGuest", {
         method: "POST",
         body: JSON.stringify({
           VisitanteID: parseInt(visitanteIDF),
@@ -336,7 +336,7 @@ export default function Dashboard() {
     if (editarVisitante == true) {
       setEditarVisitante(false);
     } else {
-      fetch("http://localhost:4000/updateGuest/", {
+      fetch("http://192.168.1.47:4000/updateGuest/", {
         method: "POST",
         body: JSON.stringify({
           VisitanteID: parseInt(visitanteIDF),
@@ -396,7 +396,7 @@ export default function Dashboard() {
       formData.append("docNombre", documentoNombre);
       formData.append("docReferencia", documentoReferencia);
       formData.append("docDescripcion", documentoDescripcion);
-      fetch("http://localhost:4000/createDocGuest/", {
+      fetch("http://192.168.1.47:4000/createDocGuest/", {
         method: "POST",
         body: formData, // data can be `string` or {object}!
       })
@@ -424,7 +424,7 @@ export default function Dashboard() {
   const getCompaniesGuest = (idVisit, idDoc) => {
     let status = 500;
     setCompaniesGuest([]);
-    fetch("http://localhost:4000/getCompaniesGuest/", {
+    fetch("http://192.168.1.47:4000/getCompaniesGuest/", {
       method: "POST",
       body: JSON.stringify({
         VisitanteID: idVisit,
@@ -449,7 +449,7 @@ export default function Dashboard() {
   const getDocumentsVisitante = (idVisit, idDoc) => {
     let status = 500;
     setDocumentsGuest([]);
-    fetch("http://localhost:4000/getAllDocumentsFromGuest/", {
+    fetch("http://192.168.1.47:4000/getAllDocumentsFromGuest/", {
       method: "POST",
       body: JSON.stringify({
         VisitanteID: idVisit,
@@ -477,7 +477,7 @@ export default function Dashboard() {
     console.log(idDoc);
     console.log(path);
     let status = 500;
-    fetch("http://localhost:4000/getDocumentBase64/", {
+    fetch("http://192.168.1.47:4000/getDocumentBase64/", {
       method: "POST",
       body: JSON.stringify({
         VisitanteID: idVisit,
@@ -517,7 +517,7 @@ export default function Dashboard() {
       }
     } else {
       let status = 500;
-      fetch("http://localhost:4000/createGuestCompany/", {
+      fetch("http://192.168.1.47:4000/createGuestCompany/", {
         method: "POST",
         body: JSON.stringify({
           VisitanteID: parseInt(visitanteID),
@@ -553,7 +553,7 @@ export default function Dashboard() {
     let fechaInicial = fecha + "T00:00:00Z";
     let fechaFinal = fecha + "T23:59:59Z";
     setVisitas([]);
-    fetch("http://localhost:4000/getVisits", {
+    fetch("http://192.168.1.47:4000/getVisits", {
       method: "POST",
       body: JSON.stringify({
         FechaEntrada: fechaInicial,
@@ -582,7 +582,7 @@ export default function Dashboard() {
   //FINISH VISIT
   const finishGuestCompany = () => {
     let status = 500;
-    fetch("http://localhost:4000/finishGuestCompany/", {
+    fetch("http://192.168.1.47:4000/finishGuestCompany/", {
       method: "POST",
       body: JSON.stringify({
         VisitanteEmpresaRegistro: registroVisitaID,

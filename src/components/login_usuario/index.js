@@ -17,7 +17,7 @@ import { Check } from '@material-ui/icons';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Slide from '@material-ui/core/Slide';
-import logo from '../../images/spataro.jpg';
+import logo from '../../images/spataroNapoli.png';
 import video from '../../images/spatarousuario.mp4';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
@@ -96,7 +96,7 @@ const Login_usuario = () => {
       set_helper_pass('');
       set_helper_cc('');
       let status;
-      fetch('http://localhost:4000/login', {
+      fetch('http://192.168.1.47:4000/login', {
         method: 'POST',
         body: JSON.stringify({ UsuarioID: parseInt(cedula), UsuarioContrasena: contrasenha }) // data can be `string` or {object}!
       }).then(res => { status = res.status; return res.json()})
@@ -120,10 +120,13 @@ const Login_usuario = () => {
       <Grid item xs={false} sm={4} md={8} className={classes.image} style={{textAlign:"center"}}>
       <video src={video} width="100%" height="90%" autoPlay={true} muted loop/>
       </Grid>
-      <Grid item xs={12} sm={8} md={4} component={Paper} elevation={6} square style={{backgroundColor:'black'}}>
+      <Grid item xs={12} sm={8} md={4} component={Paper} elevation={6} square>
         <div className={classes.paper} style={{textAlign:"center"}}>
           <form className={classes.form} noValidate>
-            <img src={logo} height="250" width="250" alt="Logo" />
+            <br/>
+            <img src={logo} height="100%" width="100%" alt="Logo" />
+            <br/>
+            <br/>
             <TextField
               style={{backgroundColor:'white'}}
               error={error_cedula}
@@ -139,6 +142,8 @@ const Login_usuario = () => {
               onChange={e => set_cedula(e.target.value)}
               autoFocus
             />
+            <br/>
+            <br/>
             <TextField
               style={{backgroundColor:'white'}}
               variant="outlined"
@@ -155,6 +160,8 @@ const Login_usuario = () => {
               onChange={e => set_contrasenha(e.target.value)}
               autoComplete="current-password"
             />
+            <br/>
+            <br/>
             <Button
               fullWidth
               variant="contained"
