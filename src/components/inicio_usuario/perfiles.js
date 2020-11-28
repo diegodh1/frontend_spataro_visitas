@@ -287,15 +287,18 @@ export default function Perfiles() {
     fetch("http://192.168.1.47:4000/getAllUserPermissions/" + id_doc, {
       method: "GET",
     })
-      .then((res) => (res.status == 204 ? [] : res.json()))
+      .then((res) => (res.status === 204 ? [] : res.json()))
       .then((response) => {
-        if (response.length > 0) {
-          set_prof_from_user(
-            response.map((element) => {
-              return element.PermisoID;
-            })
-          );
-        }
+            if(response.error){
+              set_error(true);
+              set_error_message("Error: " + response.error);
+              return; 
+            }
+            set_prof_from_user(
+              response.map((element) => {
+                return element.PermisoID;
+              })
+            );
       })
       .catch((error) => {
         alert(error);
@@ -318,7 +321,7 @@ export default function Perfiles() {
           set_error_message("Error: " + response.error);
           return;
         }
-        getProfilesFromUser(id_doc);
+        getProfilesFromUser(user_temp.UsuarioID);
         set_success(true);
         set_success_message("Permiso borrado con éxito");
       })
@@ -343,7 +346,7 @@ export default function Perfiles() {
           set_error_message("Error: " + response.error);
           return;
         }
-        getProfilesFromUser(id_doc);
+        getProfilesFromUser(user_temp.UsuarioID);
         set_success(true);
         set_success_message("Permiso asignado con éxito");
       })
