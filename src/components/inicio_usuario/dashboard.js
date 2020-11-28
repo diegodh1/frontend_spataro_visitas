@@ -42,6 +42,8 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import DoneIcon from "@material-ui/icons/Done";
 import BlockIcon from "@material-ui/icons/Block";
 import PrintIcon from "@material-ui/icons/Print";
+//IMAGENES
+import logo from '../../images/spataroNapoli.png';
 //DIVIDER
 import Divider from "@material-ui/core/Divider";
 //DIALOGS
@@ -136,11 +138,16 @@ const Print = React.forwardRef((props, ref) => {
   }));
   return (
     <div ref={ref} style={{textAlign:'center', marginTop:'10%'}}>
+      <img src={logo} height="50%" width="50%" alt="Logo" />
+      <br/>
+      <br/>
       <p>Tipo Documento: {invitado.tipoDocumento}</p>
       <p>Número Documento: {invitado.numeroDocumento}</p>
       <p>Empresa: {invitado.empresa}</p>
+      <p>Visita a: {invitado.nombreVisita}</p>
       <p>Fecha Entrada: {new Date(invitado.entrada).toLocaleString()}</p>
       <p>Fecha Salida: {new Date(invitado.salida).toLocaleString()}</p>
+      <p>Observaciones a: {invitado.observaciones}</p>
     </div>
   );
 });
@@ -616,6 +623,8 @@ export default function Dashboard() {
       empresa: item.EmpresaID,
       entrada: item.FechaEntrada,
       salida: item.FechaSalida,
+      observaciones: item.Observaciones,
+      nombreVisita: item.NombreVisita
     };
     dispatch(registrar_invitado(invitado));
     setPrintGuest(true);
